@@ -31,15 +31,15 @@ chrome.runtime.onMessage.addListener(
             );
             // Зачем-то нужна задержка времени
             setTimeout(function(){
+                if(childrenNodes[0] !== undefined) {
                     var urlArr = childrenNodes[0].children;
                     var result = [];
                     for(var i = 0; i < urlArr.length; i++) {
                         result[i] = urlArr[i].url;
                     }
                     sendResponse({resp:result});
-                }, 
-                100
-            ); 
+                }
+            }, 100); 
         }
         return true;
     }
@@ -64,15 +64,18 @@ function addUrl(title, value){
             } else {
                 parentId = node[0].id;
             }
-            chrome.bookmarks.create({
-                    'parentId': parentId,
-                    'title': title,
-                    'url': value
-                },
-                function(newBookmark) {
-                    console.log("added bookmark: " + newBookmark.title);
-                }
-            );
+            
+            setTimeout(function(){
+                chrome.bookmarks.create({
+                        'parentId': parentId,
+                        'title': title,
+                        'url': value
+                    },
+                    function(newBookmark) {
+                        console.log("added bookmark: " + newBookmark.title);
+                    }
+                );
+            }, 100);
         }
     );
 }
