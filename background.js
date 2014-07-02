@@ -3,38 +3,46 @@ chrome.runtime.onMessage.addListener(
         var title = request.title; 
         var url = request.url;
         var addFlag = request.add;
-        chrome.bookmarks.search(
-            url,
-            function(node){    
-                if(0 === node.length){
-                    addUrl(title, url);          
+        if(addFlag) {
+            chrome.bookmarks.search(
+                url,
+                function(node){    
+                    if(0 === node.length){
+                        addUrl(title, url);          
+                    }
                 }
-            }
-        ); 
-        
-        
-        
-         // Получим массив ссылок
-        var childrenNodes = [];
-        chrome.bookmarks.search(
-            'VisitedVacancies',
-            function(node){  
-                if(0 !== node.length){
-                    chrome.bookmarks.getSubTree(
-                        node[0].id, 
-                        function(nodes){
-                            childrenNodes = nodes; 
-                        }
-                    );
-                }
-               
-            }  
-        );
-        sendResponse({resp:'ok'});
-        
-        
+            ); 
+        } else {
+            // Получим массив ссылок
+            var childrenNodes = [];
+            chrome.bookmarks.search(
+                'VisitedVacancies',
+                function(node){  
+                    if(0 !== node.length){
+                        chrome.bookmarks.getSubTree(
+                            node[0].id, 
+                            function(nodes){
+                                childrenNodes = nodes; 
+                            }
+                        );
+                    }
+                   
+                }  
+            );
+            // Зачем-то нужна задержка времени
+            setTimeout(function(){
+                    var urlArr = childrenNodes[0].children;
+                    var result = [];
+                    for(var i = 0; i < urlArr.length; i++) {
+                        result[i] = urlArr[i].url;
+                    }
+                    sendResponse({resp:result});
+                }, 
+                100
+            ); 
+        }
         return true;
-    } 
+    }
 );
 
 function addUrl(title, value){
@@ -56,8 +64,6 @@ function addUrl(title, value){
             } else {
                 parentId = node[0].id;
             }
-            
-            
             chrome.bookmarks.create({
                     'parentId': parentId,
                     'title': title,
