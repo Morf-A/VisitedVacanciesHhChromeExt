@@ -6,7 +6,7 @@
     "permissions": [ "http://hh.ru/", "bookmarks"],
     "content_scripts": [
         {
-            "matches": [ "http://hh.ru/*" ],
+            "matches": [ "http://hh.ru/search/*" ],
             "js": ["jquery-2.1.1.min.js", "content.js"]
         }
     ],

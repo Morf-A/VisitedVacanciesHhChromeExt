@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener(
                 }  
             );
             // Зачем-то нужна задержка времени
-            setTimeout(function(){
+            var intervalID = setInterval(function(){
                 if(childrenNodes[0] !== undefined) {
                     var urlArr = childrenNodes[0].children;
                     var result = [];
@@ -38,6 +38,7 @@ chrome.runtime.onMessage.addListener(
                         result[i] = urlArr[i].url;
                     }
                     sendResponse({resp:result});
+                    clearInterval(intervalID);
                 }
             }, 100); 
         }
@@ -49,7 +50,7 @@ function addUrl(title, value){
     chrome.bookmarks.search(
         'VisitedVacancies',
         function(node){    
-            var parentId;
+            var parentId = false;
             if(0 === node.length){
                 chrome.bookmarks.create(
                     {
@@ -65,16 +66,19 @@ function addUrl(title, value){
                 parentId = node[0].id;
             }
             
-            setTimeout(function(){
-                chrome.bookmarks.create({
-                        'parentId': parentId,
-                        'title': title,
-                        'url': value
-                    },
-                    function(newBookmark) {
-                        console.log("added bookmark: " + newBookmark.title);
-                    }
-                );
+            var intervalID = setInterval(function(){
+                if(parentId !== false) {
+                    chrome.bookmarks.create({
+                            'parentId': parentId,
+                            'title': title,
+                            'url': value
+                        },
+                        function(newBookmark) {
+                            console.log("added bookmark: " + newBookmark.title);
+                        }
+                    );
+                    clearInterval(intervalID);
+                }
             }, 100);
         }
     );
