@@ -1,0 +1,16 @@
+{
+    "manifest_version": 2,
+    "version": "1.0",
+    "name": "VisitedVacancies",
+    "description": "check visited vacancies",
+    "permissions": [ "http://hh.ru/", "bookmarks"],
+    "content_scripts": [
+        {
+            "matches": [ "http://hh.ru/*" ],
+            "js": ["jquery-2.1.1.min.js", "content.js"]
+        }
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    }
+}
